@@ -25,7 +25,7 @@ public class BookingController {
     private final IRoomService roomService;
 
 
-    @GetMapping("/add-bookings")
+    @GetMapping("/all-bookings")
     public ResponseEntity<List<BookingResponse>> getAllBookings() {
     List<BookedRoom> bookings = bookingService.getAllBookings();
     List<BookingResponse> bookingResponses = new ArrayList<>();
@@ -50,7 +50,7 @@ public class BookingController {
     }
 
 
-    @GetMapping("/room/{roomId}/booking")
+    @PostMapping("/room/{roomId}/booking")
     public ResponseEntity<?> saveBooking(@PathVariable Long roomId,@RequestBody BookedRoom bookingRequest){
         try{
             String confirmationCode = bookingService.saveBooking(roomId, bookingRequest);
