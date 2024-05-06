@@ -1,5 +1,6 @@
 package com.artina.serenityairbnbapp.service;
 
+import com.artina.serenityairbnbapp.exception.InternalServerException;
 import com.artina.serenityairbnbapp.exception.ResourceNotFoundException;
 import com.artina.serenityairbnbapp.model.Room;
 import com.artina.serenityairbnbapp.repository.RoomRepository;
@@ -57,5 +58,31 @@ public class RoomService implements IRoomService{
         return null;
     }
 
+    @Override
+    public void deleteRoom(Long roomId) {
+        Optional<Room> theRoom = roomRepository.findById(roomId);
+        if(theRoom.isPresent()){
+            roomRepository.deleteById(roomId);
+        }
+    }
 
+    @Override
+    public Room updateRoom(Long roomId, String roomType, BigDecimal roomPrice, byte[] photoBytes) {
+       Room room = roomRepository.findById(roomId).orElseThrow(() -> new ResourceNotFoundException("Sorry, Room not found!"));
+       if(roomType != null) room.setRoomType(roomType);
+       if(roomPrice != null) room.setRoomPrice(roomPrice);
+       if(photoBytes != null && photoBytes.length > 0){
+           try{
+               room.setPhoto(new SerialBlob(photoBytes));
+           }catch(SQLException ex){
+               throw new InternalServerException("Something went wrong with updating room");
+           }
+       }
+       return roomRepository.save(room);
+    }
+
+    @Override
+    public Optional<Room> getRoomById(Long roomId) {
+       return Optional.of(roomRepository.findById(roomId).get());
+    }
 }
