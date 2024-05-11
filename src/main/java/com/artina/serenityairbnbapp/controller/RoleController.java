@@ -14,18 +14,18 @@ import java.util.List;
 import static org.springframework.http.HttpStatus.FOUND;
 
 @RestController
-@RequestMapping("/api/roles")
+@RequestMapping("/roles")
 @RequiredArgsConstructor
 public class RoleController {
     private final IRoleService roleService;
 
 
-    @GetMapping("/all")
+    @GetMapping("/all-roles")
     public ResponseEntity<List<Role>> getAllRoles(){
         return new ResponseEntity<List<Role>>(roleService.getRoles(), FOUND);
     }
 
-    @PostMapping("/create")
+    @PostMapping("/create-new-role")
     public ResponseEntity<String> createRole(@RequestBody Role theRole){
         try{
             roleService.createRole(theRole);
