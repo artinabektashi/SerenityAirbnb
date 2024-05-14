@@ -50,6 +50,7 @@ public class SecurityConfig {
         return authProvider;
     }
 
+
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
@@ -58,16 +59,19 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer :: disable)
+        http.csrf(AbstractHttpConfigurer::disable)
                 .exceptionHandling(
                         exception -> exception.authenticationEntryPoint(jwtAuthEntryPoint))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/rooms/**","/bookings/**")
-                        .permitAll().requestMatchers("/roles/**").hasRole("ADMIN")
-                        .anyRequest().authenticated());
-        http.authenticationProvider(authProvider());
-        http.addFilterBefore(authTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+                        .requestMatchers("/auth/**", "/rooms/**", "/bookings/**") // Permit all requests under "/auth/**"
+                        .permitAll()
+                        .requestMatchers("/roles/**") // Require "ADMIN" role for "/roles/**"
+                        .hasRole("ADMIN")
+                        .anyRequest()
+                        .authenticated())
+                .authenticationProvider(authProvider())
+                .addFilterBefore(authTokenFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 }

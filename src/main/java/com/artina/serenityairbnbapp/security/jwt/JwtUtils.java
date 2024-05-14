@@ -28,14 +28,16 @@ public class JwtUtils {
     public String generateJwtTokenForUser(Authentication authentication) {
         AirBnbUserDetails userPrincipal = (AirBnbUserDetails) authentication.getPrincipal();
         List<String> roles = userPrincipal.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority).toList();
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
 
         return Jwts.builder()
                 .setSubject(userPrincipal.getUsername())
                 .claim("roles", roles)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date((new Date()).getTime()+jwtExpirationTime))
-                .signWith(key(), SignatureAlgorithm.HS256).compact();
+                .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationTime))
+                .signWith(key(), SignatureAlgorithm.HS256)
+                .compact();
     }
 
     private Key key() {
@@ -43,9 +45,12 @@ public class JwtUtils {
     }
 
     public String getUserNameFromToken(String token) {
-        return Jwts.parserBuilder()
+        Claims claims = Jwts.parserBuilder()
                 .setSigningKey(key())
-                .build().parseClaimsJws(token).getBody().getSubject();
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.getSubject();
     }
 
     public boolean validateToken(String token) {

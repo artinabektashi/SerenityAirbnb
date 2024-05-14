@@ -4,12 +4,14 @@ spring:
     username: root
     password: mysqladmin
     driver-class-name: com.mysql.cj.jdbc.Driver
+
   jpa:
     hibernate:
       ddl-auto: update
 
 server:
   port: 8081
+
 
 auth:
   jwt:

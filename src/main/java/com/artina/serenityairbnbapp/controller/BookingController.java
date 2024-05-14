@@ -27,7 +27,6 @@ public class BookingController {
 
 
     @GetMapping("/all-bookings")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<BookingResponse>> getAllBookings() {
     List<BookedRoom> bookings = bookingService.getAllBookings();
     List<BookingResponse> bookingResponses = new ArrayList<>();
